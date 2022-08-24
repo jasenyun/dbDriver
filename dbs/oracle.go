@@ -13,7 +13,7 @@ type OracleClient struct {
 
 var ordb *OracleClient
 
-func NewOracle(dsn string) *sql.DB {
+func NewOracle(dsn string) *OracleClient {
 	db, err := sql.Open("godror", dsn)
 	if err != nil {
 		fmt.Println("ORACLE 数据库创建失败!")
@@ -25,9 +25,10 @@ func NewOracle(dsn string) *sql.DB {
 		fmt.Printf("ORACLE 数据库创建失败:%s", err)
 		return nil
 	}
-
+	ordb = &OracleClient{}
+	ordb.Client = db
 	fmt.Println("ORACLE 数据库初始化连接成功!")
-	return db
+	return ordb
 }
 
 func (ordb *OracleClient) Close() {

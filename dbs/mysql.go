@@ -13,7 +13,7 @@ type MysqlClient struct {
 
 var sqlDb *MysqlClient
 
-func NewMySql(dsn string) *sql.DB {
+func NewMySql(dsn string) *MysqlClient {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		fmt.Println("MySQL 数据库创建失败!")
@@ -25,16 +25,17 @@ func NewMySql(dsn string) *sql.DB {
 		fmt.Println("MySQL 数据库创建失败!")
 		return nil
 	}
-
+	sqlDb = &MysqlClient{}
+	sqlDb.Client = db
 	fmt.Println("MySQL 数据库初始化连接成功!")
-	return db
+	return sqlDb
 }
 
 func (sqlDb *MysqlClient) Close() {
 	sqlDb.Client.Close()
 }
 func (sqlDb *MysqlClient) Query(sqlStr string) []map[string]string {
-	res, err := ordb.Client.Query(sqlStr)
+	res, err := sqlDb.Client.Query(sqlStr)
 	if err != nil {
 		return nil
 	}

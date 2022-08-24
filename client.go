@@ -27,13 +27,13 @@ func InitInstance(dbType DB_TYPE, dns string) {
 	DbCli.DbType = dbType
 	switch dbType {
 	case MYSQL_DB:
-		DbCli.MysqlDb.Client = dbs.NewMySql(dns)
+		DbCli.MysqlDb = dbs.NewMySql(dns)
 		break
 	case ORACLE_DB:
-		DbCli.MysqlDb.Client = dbs.NewOracle(dns)
+		DbCli.OracleDb = dbs.NewOracle(dns)
 		break
 	case POSTGRESQL:
-		DbCli.MysqlDb.Client = dbs.NewPostgresql(dns)
+		DbCli.PostgresqlDb = dbs.NewPostgresql(dns)
 		break
 	default:
 		log.Fatal("未找到对应的数据库")
@@ -42,10 +42,10 @@ func InitInstance(dbType DB_TYPE, dns string) {
 }
 
 func (db *DbClient) getDriver() dbs.SQLBase {
-	if db.MysqlDb.Client != nil {
+	if db.MysqlDb != nil {
 		return db.MysqlDb
 	}
-	if db.OracleDb.Client != nil {
+	if db.OracleDb != nil {
 		return db.OracleDb
 	}
 	return db.PostgresqlDb

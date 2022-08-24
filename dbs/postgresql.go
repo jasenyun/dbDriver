@@ -13,7 +13,7 @@ type PostgresqlClient struct {
 
 var pgdb *PostgresqlClient
 
-func NewPostgresql(dsn string) *sql.DB {
+func NewPostgresql(dsn string) *PostgresqlClient {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		fmt.Println("Postgresql 数据库创建失败!")
@@ -25,9 +25,10 @@ func NewPostgresql(dsn string) *sql.DB {
 		fmt.Printf("Postgresql 数据库创建失败:%s", err)
 		return nil
 	}
-
+	pgdb = &PostgresqlClient{}
+	pgdb.Client = db
 	fmt.Println("Postgresql 数据库初始化连接成功!")
-	return db
+	return pgdb
 }
 
 func (pgdb *PostgresqlClient) Close() {
