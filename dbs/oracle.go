@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/godror/godror"
+	"log"
 )
 
 type OracleClient struct {
@@ -12,8 +13,8 @@ type OracleClient struct {
 
 var ordb *OracleClient
 
-func NewOracle() *sql.DB {
-	db, err := sql.Open("godror", "")
+func NewOracle(dsn string) *sql.DB {
+	db, err := sql.Open("godror", dsn)
 	if err != nil {
 		fmt.Println("ORACLE 数据库创建失败!")
 		return nil
@@ -25,7 +26,6 @@ func NewOracle() *sql.DB {
 		return nil
 	}
 
-	ordb.Client = db
 	fmt.Println("ORACLE 数据库初始化连接成功!")
 	return db
 }
@@ -33,6 +33,50 @@ func NewOracle() *sql.DB {
 func (ordb *OracleClient) Close() {
 	ordb.Client.Close()
 }
-func (ordb *OracleClient) Query() {
-	sqlDb.Client.Close()
+func (ordb *OracleClient) Query(sqlStr string) []map[string]string {
+	res, err := ordb.Client.Query(sqlStr)
+	if err != nil {
+		return nil
+	}
+	columns, _ := res.Columns()
+	count := len(columns)
+	var values = make([]interface{}, count)
+	var scanValuse = make([]interface{}, count)
+	for i, _ := range values {
+		scanValuse[i] = &values[i]
+	}
+	i := 0
+	record := make([]map[string]string, 0)
+	for res.Next() {
+		res.Scan(scanValuse)
+		row := make(map[string]string)
+		for i, v := range values {
+			if v != nil {
+				key := columns[i]
+				row[key] = string(v.([]byte))
+			}
+		}
+		record[i] = row
+		i++
+	}
+	return record
+}
+
+func (ordb *OracleClient) InsertOrUpdate(sqlStr string) int64 {
+	result, err := ordb.Client.Exec(sqlStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	rows, _ := result.RowsAffected()
+	return rows
+}
+
+func (sqlDb *OracleClient) Delete(sqlStr string) bool {
+	result, _ := sqlDb.Client.Exec(sqlStr)
+	rows, _ := result.RowsAffected()
+	if rows > 0 {
+		return true
+	} else {
+		return false
+	}
 }
