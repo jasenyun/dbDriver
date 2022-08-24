@@ -10,5 +10,5 @@ func TestInitInstance(t *testing.T) {
 
 	InitInstance(MYSQL_DB, mysql_dns)
 	result := DbCli.Query("select * from users")
-	fmt.Println(result)
+	fmt.Printf("获取到数据：%d", len(result))
 }

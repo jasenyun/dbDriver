@@ -72,8 +72,8 @@ func (ordb *OracleClient) InsertOrUpdate(sqlStr string) int64 {
 	return rows
 }
 
-func (sqlDb *OracleClient) Delete(sqlStr string) bool {
-	result, _ := sqlDb.Client.Exec(sqlStr)
+func (ordb *OracleClient) Delete(sqlStr string) bool {
+	result, _ := ordb.Client.Exec(sqlStr)
 	rows, _ := result.RowsAffected()
 	if rows > 0 {
 		return true

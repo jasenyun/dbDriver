@@ -43,13 +43,13 @@ func (sqlDb *MysqlClient) Query(sqlStr string) []map[string]string {
 	count := len(columns)
 	var values = make([]interface{}, count)
 	var scanValuse = make([]interface{}, count)
-	for i, _ := range values {
+	for i := range values {
 		scanValuse[i] = &values[i]
 	}
 	i := 0
 	record := make([]map[string]string, 0)
 	for res.Next() {
-		res.Scan(scanValuse)
+		res.Scan(values)
 		row := make(map[string]string)
 		for i, v := range values {
 			if v != nil {
